@@ -1,26 +1,31 @@
 # frozen_string_literal: true
 
-class Deck
-  VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'].freeze
-  SUITS = %w[♦ ♠ ♥ ♣].freeze
+require_relative 'card'
 
-  attr_reader :cards
+class Deck
+  attr_reader :deck
 
   def initialize
-    @cards = build_deck
+    @deck = build_deck
   end
 
-  def take_card
-    cards.pop
+  def take_card(number = 1)
+    @deck.pop(number)
+  end
+
+  def take_start_cards
+    take_card(2)
   end
 
   protected
 
-  attr_writer :cards
-
   def build_deck
-    SUITS.flat_map do |suit|
-      VALUES.map { |value| Card.new(value, suit) }
-    end.shuffle!
+    deck = []
+    Card::SUITS.each do |suit|
+      Card::VALUES.each do |value|
+        deck << Card.new(suit, value)
+      end
+    end
+    deck.shuffle
   end
 end
