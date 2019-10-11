@@ -1,50 +1,40 @@
 # frozen_string_literal: true
 
+require_relative 'deck'
+require_relative 'card'
+require_relative 'hand'
+
 class Player
-  MAX_SCORE = 21
-  SKIP_SCORE = 17
+  attr_reader :name
+  attr_accessor :bank, :cards, :hand
 
-  attr_accessor :name, :cards
-  attr_reader :bank
-
-  def initialize(name, bank = 0)
+  def initialize(name)
     @name = name
-    @cards = []
-    @bank = bank
+    @bank = 0
+    @hand = Hand.new
   end
 
-  def add_card(card)
-    cards << card
+  def take_card(cards)
+    if @hand.cards
+      @hand.cards += cards
+    else
+      @hand.cards = cards
+    end
   end
 
-  def deposit(amount)
-    self.bank += amount
+  def two_cards?
+    @hand.two_cards?
   end
 
-  def withdraw(amount)
-    self.bank -= amount
+  def card_sum
+    @hand.card_sum
   end
 
-  def zero_cards
-    self.cards = []
+  def return_cards
+    @hand.cards = nil
   end
 
-  def score
-    score = 0
-    cards.each { |card| score += score > 10 ? card.ace_cost : card.cost }
-
-    score
+  def player_cards
+    (@hand.cards.map { |card| "#{card.value}#{card.suit}" }).join(' ')
   end
-
-  def score_overage?
-    score > MAX_SCORE
-  end
-
-  def score_for_skip?
-    score > SKIP_SCORE
-  end
-
-  protected
-
-  attr_writer :bank
 end

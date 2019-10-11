@@ -1,48 +1,53 @@
 # frozen_string_literal: true
 
 class Interface
-  PLAYER_ACTIONS = ['Skip', 'Take card', 'Open cards'].freeze
-  RESULT_MESSAGE = { win: 'You won', losing: 'You lose', draw: 'Draw' }.freeze
-
-  attr_reader :game
-
-  def initialize(game)
-    @game = game
+  def get_user_name
+    print 'Enter your name: '
+    @name = gets.chomp.to_s
   end
 
-  def view_player_info(player, hide = false)
-    puts "Player: #{player.name}\nScore: #{hide ? '**' : player.score}\nBalance: #{player.bank}\n"
-    cards_list = ''
-    player.cards.each { |card| cards_list += hide ? ' **' : " #{card}" }
-    puts "Cards: #{cards_list}"
-    puts "____________________\n"
+  def balance_message(user_amount, dealer_amount)
+    puts "#{@name}'s balance:  #{user_amount}$. Dealer's: #{dealer_amount}$"
   end
 
-  def print_game_status(game)
-    cls
-    view_player_info(game.player)
-    view_player_info(game.dealer, game.in_progress?)
-
-    puts ''
-    puts RESULT_MESSAGE.fetch(game.result) if game.finished?
+  def user_move_menu(user_cards, user_cards_sum, dealer_cards, add_card)
+    puts "\n#{@name}'s cards: #{user_cards}, Score: #{user_cards_sum}"
+    puts "Dealer's cards: #{dealer_cards}"
+    puts 'Enter 1 to open cards'
+    puts 'Enter 2 to skip turn '
+    puts 'Enter 3 to take a card ' if add_card
+    gets.chomp.to_i
   end
 
-  def get_player_choice
-    puts "Choose option:\n"
-    PLAYER_ACTIONS.each.with_index(1) { |action, num| puts "#{num}. #{action}" }
-    gets.to_i - 1
+  def show_cards(user_cards, user_sum, dealer_cards, dealer_sum)
+    puts "\n#{@name}'s cards: #{user_cards}, Score: #{user_sum}"
+    puts "Dealer cards: #{dealer_cards}, Score: #{dealer_sum}\n"
   end
 
-  def next_game_request
-    if game.players_bank_zero?
-      puts 'Not enough money to play'
-      return
+  def show_game_result(winner)
+    case winner
+    when :nobody
+      puts "There're no winners"
+    when :draw
+      puts 'Draw'
+    when :user
+      puts "#{@name} won"
+    when :dealer
+      puts 'Dealer won'
     end
+  end
 
+  def try_again_menu
     puts 'Play again? (1 - yep, 0 - nope)'
-    return if gets.to_i.zero?
+    gets.chomp.to_i
+  end
 
-    game.start_game
+  def dealer_win(user_amount)
+    puts "#{@name}'s balance: #{user_amount}$. Not enough money to play."
+  end
+
+  def user_win(dealer_amount)
+    puts "Dealer's balance: #{dealer_amount}$. You won!"
   end
 
   def cls

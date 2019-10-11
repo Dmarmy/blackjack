@@ -1,24 +1,21 @@
 # frozen_string_literal: true
 
 class Card
-  COSTS = { 'J' => 10, 'Q' => 10, 'K' => 10, 'A' => 11 }.freeze
+  attr_reader :suit, :value
 
-  attr_reader :value, :suit
+  VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'].freeze
+  SUITS = %w[♦ ♠ ♥ ♣].freeze
 
-  def initialize(value, suit)
-    @value = value
+  def initialize(suit, value)
     @suit = suit
+    @value = value
+    validate!
   end
 
-  def to_s
-    "#{value}#{suit}"
-  end
+  private
 
-  def cost
-    COSTS.fetch(value, value)
-  end
-
-  def ace_cost
-    value == 'A' ? 1 : cost
+  def validate!
+    raise 'Not valid value' unless VALUES.include?(@value)
+    raise 'Not valid suit' unless SUITS.include?(@suit)
   end
 end
